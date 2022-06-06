@@ -11,3 +11,10 @@ kafka:
   host: '10.10.132.197'
   port: 9094
   topic: 'sensors'
+
+elasticsearch:
+  host:
+    dev: "localhost"
+    prod: "elasticsearch-master"
+  port: 9200
+  scheme: "http"

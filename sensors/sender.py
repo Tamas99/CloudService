@@ -1,4 +1,3 @@
-from base64 import encode
 from aiokafka import AIOKafkaProducer
 from fastapi import FastAPI
 import uvicorn
@@ -7,7 +6,7 @@ import pandas as pd
 import sys
 import os
 
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
+# sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from logger.logger import rootLogger as logger
 
 logger.debug('Set config settings')
@@ -19,17 +18,11 @@ config.set_file('config.yaml')
 
 app = FastAPI()
 
-def read():
+def read(file_nr):
     # Reading file
     logger.debug("Reading test file")
-    data = pd.read_csv('../CMaps/test_FD001.txt', sep=" ", header=None)
+    data = pd.read_csv('../CMaps/test_FD00' + str(file_nr) + '.txt', sep=" ", header=None)
     return data
-
-# def data_to_str():
-#     data = read()
-#     for row in range(len(data[0])):
-#         for col in 
-#     return data_dict
 
 def get_row(row, y):
     data = read()
@@ -38,13 +31,13 @@ def get_row(row, y):
         time_series += str(data.loc[row,col]) + ' '
     return time_series
 
-@app.post('/send', status_code=200)
-async def kafka_produce():
-    data = read()
+@app.post('/send/{file_nr}', status_code=200)
+async def kafka_produce(file_nr: int):
+    data = read(file_nr)
     x, y = data.shape
-    host = config['kafka']['host']
-    port = config['kafka']['port']
-    topic = str(config['kafka']['topic'])
+    host = config['kafka']['host'].get()
+    port = config['kafka']['port'].get()
+    topic = str(config['kafka']['topic'].get())
     producer = AIOKafkaProducer(bootstrap_servers=f'{host}:{port}')
     # Get cluster layout and initial topic/partition leadership information
     logger.debug('Starting Kafka producer')
@@ -52,20 +45,24 @@ async def kafka_produce():
     logger.debug('Sending message to Kafka')
     try:
         for row in range(x):
+            logger.debug('Current row: ' + str(row))
             # for col in data:
             time_series = get_row(row, y)
             # Produce message
             await producer.send_and_wait(topic, bytes(time_series.encode('ascii')))
+            # if row > 100:
+                # break
     finally:
+        await producer.send_and_wait(topic, bytes('END'.encode('ascii')))
         # Wait for all pending messages to be delivered or expire.
         logger.debug('Stoping Kafka producer')
         await producer.stop()
 
 if __name__ == '__main__':
-    module = config['server']['module']
-    app = config['server']['fastapiObject']
-    host = str(config['server']['host'])
-    port = str(config['server']['port'])
+    module = config['server']['module'].get()
+    app = config['server']['fastapiObject'].get()
+    host = str(config['server']['host'].get())
+    port = str(config['server']['port'].get())
     logger.debug('Starting server')
     uvicorn.run(
         f'{module}:{app}',

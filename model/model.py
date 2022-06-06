@@ -134,4 +134,12 @@ def save_model():
     pickle.dump(model , f)
     f.close()
 
+def save_scaler():
+    rootLogger.debug("Saving the scaler")
+    import pickle
+    f = open('fw_scaler', 'wb')
+    pickle.dump(scaler, f)
+    f.close()
+
 save_model()
+save_scaler()
