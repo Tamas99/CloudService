@@ -1,0 +1,96 @@
+# yamllint disable rule:line-length
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+  labels:
+    app: zookeeper
+spec:
+  replicas: 3
+  serviceName: zookeeper
+  selector:
+    matchLabels:
+      app: zookeeper
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      containers:
+        - name: zookeeper
+          image: confluentinc/cp-zookeeper:6.2.0
+          command:
+            - /bin/sh
+            - -c
+            - export ZOOKEEPER_SERVER_ID=$(expr $(hostname | grep -o "[[:digit:]]*$") + 1) &&
+             /etc/confluent/docker/run
+          env:
+            - name: ZOOKEEPER_TICK_TIME
+              value: "2000"
+            - name: ZOOKEEPER_CLIENT_PORT
+              value: "22181"
+            - name: ZOOKEEPER_INIT_LIMIT
+              value: "5"
+            - name: ZOOKEEPER_SYNC_LIMIT
+              value: "2"
+            - name: ZOOKEEPER_SERVERS
+              value: zookeeper-0.zookeeper:22888:23888;zookeeper-1.zookeeper:32888:33888;zookeeper-2.zookeeper:42888:43888
+          ports:
+            - containerPort: 22181
+              name: client
+            - containerPort: 22888
+              name: server-1
+            - containerPort: 23888
+              name: election-1
+            - containerPort: 32888
+              name: server-2
+            - containerPort: 33888
+              name: election-2
+            - containerPort: 42888
+              name: server-3
+            - containerPort: 43888
+              name: election-3
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              subPath: data
+            - name: data
+              mountPath: /datalog
+              subPath: datalog
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        storageClassName: "nfs-client"
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+  labels:
+    app: zookeeper
+spec:
+  clusterIP: None
+  selector:
+    app: zookeeper
+  ports:
+    - port: 22181
+      name: client
+    - port: 22888
+      name: server-1
+    - port: 23888
+      name: election-1
+    - port: 32888
+      name: server-2
+    - port: 33888
+      name: election-2
+    - port: 42888
+      name: server-3
+    - port: 43888
+      name: election-3

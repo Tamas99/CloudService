@@ -1,0 +1,13 @@
+appName: predicter
+logLevel: DEBUG
+
+server:
+  module: 'rul_prediction'
+  fastapiObject: 'app'
+  port: 8020
+  host: '0.0.0.0'
+
+kafka:
+  host: '10.10.132.197'
+  port: 9094
+  topic: 'sensors'

@@ -1,0 +1,13 @@
+appName: sender
+logLevel: DEBUG
+
+server:
+  module: 'sender'
+  fastapiObject: 'app'
+  port: 8010
+  host: '0.0.0.0'
+
+kafka:
+  host: '10.10.132.197'
+  port: 9094
+  topic: 'sensors'
