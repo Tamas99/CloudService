@@ -13,7 +13,6 @@ from elasticsearch.client import IndicesClient
 from elasticsearch.helpers import async_bulk
 from datetime import datetime
 
-
 logger.debug('Set config settings')
 # Instantiates config. Confuse searches for a config_default.yaml
 config = confuse.Configuration('sender', __name__)
@@ -39,23 +38,19 @@ async def app_shutdown():
     await es.close()
 
 async def create_document(RUL, predictedRUL, file_nr):
+    unit_number = "unit_number" + str(file_nr)
     rul = "rul" + str(file_nr)
     predicted = "predicter" + str(file_nr)
     for index in range(len(RUL)):
-        try:
-            yield {
-                "_index": 'rul-elastic',
-                "doc": {
-                    rul: RUL[index],
-                    predicted: predictedRUL[index],
-                    "@timestamp": datetime.now()
-                },
-            }
-        except Exception as e:
-            raise HTTPException(
-                status_code=400,
-                detail="Exception found during document creation: " + str(e)
-            )
+        yield {
+            "_index": 'rul-elastic',
+            "doc": {
+                unit_number: index+1,
+                rul: RUL.loc[index]['RUL'],
+                predicted: predictedRUL[index],
+                "@timestamp": datetime.now()
+            },
+        }
 
 def convert_to_df(msgs):
     df = pd.DataFrame({})
@@ -145,12 +140,19 @@ async def predict(file_nr: int):
     t = test.columns == 'RUL'
     ind = [i for i, x in enumerate(t) if x]
     predictedRUL = []
-    for i in range(test.unit_number.min(), test.unit_number.max()+1):
-        npredictedRUL=test[test.unit_number==i].iloc[test[test.unit_number==i].time_in_cycles.max()-1,ind]
-        predictedRUL.append(npredictedRUL)
+    index_out = -1
+    try:
+        for i in range(test.unit_number.min(), test.unit_number.max()+1):
+            npredictedRUL=test[test.unit_number==i].iloc[test[test.unit_number==i].time_in_cycles.max()-1,ind]
+            predictedRUL.append(npredictedRUL)
+            index_out = i
+    except Exception as e:
+        logger.error('Exception: ' + str(e))
+        logger.debug('Info - i:{0}, len:{1}, ind:{2}'.format(index_out, len(test.unit_number), ind))
+        print(test)
     # plot_ruls(RUL, predictedRUL)
     # Insert data into Elasticsearch
-    await async_bulk(es, async_bulk(RUL, predictedRUL, file_nr))
+    await async_bulk(es, create_document(RUL, predictedRUL, file_nr))
     return {"result": "Created"}
 
 if __name__ == '__main__':

@@ -21,11 +21,11 @@ app = FastAPI()
 def read(file_nr):
     # Reading file
     logger.debug("Reading test file")
-    data = pd.read_csv('../CMaps/test_FD00' + str(file_nr) + '.txt', sep=" ", header=None)
+    data = pd.read_csv('CMaps/test_FD00' + str(file_nr) + '.txt', sep=" ", header=None)
     return data
 
-def get_row(row, y):
-    data = read()
+def get_row(row, y, file_nr):
+    data = read(file_nr)
     time_series = ''
     for col in range(y):
         time_series += str(data.loc[row,col]) + ' '
@@ -47,11 +47,9 @@ async def kafka_produce(file_nr: int):
         for row in range(x):
             logger.debug('Current row: ' + str(row))
             # for col in data:
-            time_series = get_row(row, y)
+            time_series = get_row(row, y, file_nr)
             # Produce message
             await producer.send_and_wait(topic, bytes(time_series.encode('ascii')))
-            # if row > 100:
-                # break
     finally:
         await producer.send_and_wait(topic, bytes('END'.encode('ascii')))
         # Wait for all pending messages to be delivered or expire.
