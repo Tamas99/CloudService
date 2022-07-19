@@ -37,11 +37,13 @@ jobs:
       #  run: |
         # echo 10c93dae-46b0-4420-bfdb-f7f39654b321 | docker login https://ghcr.io/v1 -u tamas99 --password-stdin
       with:
-        registry: d.codespring.ro
+        registry: artifactory.boschdevcloud.com
         # username: ${{ secrets.GITLAB_USERNAME }}
         # password: ${{ secrets.GITLAB_TOKEN }}
-        username: ballai.tamas
-        password: glpat-ET8RJNrjqqLEvuyaGqZb
+        # username: ballai.tamas
+        # password: glpat-ET8RJNrjqqLEvuyaGqZb
+        username: bat1clj2
+        password: cmVmdGtuOjAxOjE2ODk3NTMyMjI6RjJQcHdwdXhUZ3EzeGJIRVJ5QUdIdlZsdjlt
         # username: ${{ secrets.DOCKER_HUB_USERNAME }}
         # password: ${{ secrets.DOCKER_HUB_TOKEN }}
     - name: pull-image
