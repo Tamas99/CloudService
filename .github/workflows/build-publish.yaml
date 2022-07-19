@@ -37,15 +37,14 @@ jobs:
       #  run: |
         # echo 10c93dae-46b0-4420-bfdb-f7f39654b321 | docker login https://ghcr.io/v1 -u tamas99 --password-stdin
       with:
-         registry: d.codespring.ro
-         username: ${{ secrets.GITLAB_USERNAME }}
-         password: ${{ secrets.GITLAB_TOKEN }}
+        registry: d.codespring.ro
+        username: ${{ secrets.GITLAB_USERNAME }}
+        password: ${{ secrets.GITLAB_TOKEN }}
         #  password: glpat-ET8RJNrjqqLEvuyaGqZb
         # username: ${{ secrets.DOCKER_HUB_USERNAME }}
         # password: ${{ secrets.DOCKER_HUB_TOKEN }}
     - name: pull-image
       run: |
-#        docker login d.codespring.ro -u tamas99 -p glpat-ET8RJNrjqqLEvuyaGqZb
         docker pull d.codespring.ro/kintzel.levente/bi-poc/sphinx-master-image:v2
     # Runs HTML sphinx-build
     # - name: sphinx-build HTML
