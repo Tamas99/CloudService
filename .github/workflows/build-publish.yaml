@@ -1,0 +1,73 @@
+# This is a basic workflow to help you get started with Actions
+
+name: build-publish
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the specified branch
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      # Push events on specified branch
+      - 'main'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: [ self-hosted, linux ]
+    # runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - 
+      name: Checkout 🛎️
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    # - name: download-gpg
+    #   run: |
+    #     curl -fsSL https://download.docker.com/linux/ubuntu/gpg
+    # - name: setup-docker
+    #   uses: docker-practice/actions-setup-docker@v1
+    # -
+       name: Login to Docker
+       uses: docker/login-action@v1
+      #  run: |
+        # echo 10c93dae-46b0-4420-bfdb-f7f39654b321 | docker login https://ghcr.io/v1 -u tamas99 --password-stdin
+       with:
+        #  registry: d.codespring.ro
+        #  username: ${{ secrets.GITLAB_USERNAME }}
+        #  password: ${{ secrets.GITLAB_TOKEN }}
+         username: tamas99
+        #  password: glpat-ET8RJNrjqqLEvuyaGqZb
+         password: 10c93dae-46b0-4420-bfdb-f7f39654b321
+    - name: pull-image
+      run: |
+        docker login d.codespring.ro -u tamas99 -p glpat-ET8RJNrjqqLEvuyaGqZb
+        docker pull d.codespring.ro/kintzel.levente/bi-poc/sphinx-master-image:v2
+    # Runs HTML sphinx-build
+    # - name: sphinx-build HTML
+    #   run: |
+    #     docker run --rm \
+    #     -v ${{ github.workspace }}:/sphinxneeds \
+    #     d.codespring.ro/kintzel.levente/bi-poc/sphinx-master-image:v2 make html
+    # # Verifies Test Coverage
+    # - name: verify test coverage
+    #   run: |
+    #     python ${{ github.workspace }}/docs/cov_verifier/verifier.py
+        
+  # Deploy built website to github pages
+  # deploy:
+  #     name: Deploy
+  #     runs-on: [self-hosted]
+  #     needs: build
+  #     steps:
+  #         - uses: peaceiris/actions-gh-pages@v3
+  #           with:
+  #               github_token: ${{ secrets.GITHUB_TOKEN }}
+  #               # Action doesnt take default working-directory into account
+  #               publish_dir: ./docs/_build/html
