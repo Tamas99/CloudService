@@ -133,3 +133,4 @@ dmypy.json
 
 # Project files
 fw*
+actions-runner/
