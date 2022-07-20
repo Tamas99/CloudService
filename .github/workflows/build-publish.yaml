@@ -16,8 +16,8 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    # runs-on: [ self-hosted, linux ]
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    # runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -37,13 +37,14 @@ jobs:
       #  run: |
         # echo 10c93dae-46b0-4420-bfdb-f7f39654b321 | docker login https://ghcr.io/v1 -u tamas99 --password-stdin
       with:
-        registry: artifactory.boschdevcloud.com
+        registry: d.codespring.ro
+        # registry: artifactory.boschdevcloud.com
         # username: ${{ secrets.GITLAB_USERNAME }}
         # password: ${{ secrets.GITLAB_TOKEN }}
-        # username: ballai.tamas
-        # password: glpat-ET8RJNrjqqLEvuyaGqZb
-        username: bat1clj2
-        password: cmVmdGtuOjAxOjE2ODk3NTMyMjI6RjJQcHdwdXhUZ3EzeGJIRVJ5QUdIdlZsdjlt
+        username: ballai.tamas
+        password: glpat-j6cCJoKUtx_e5TX2cx_5
+        # username: bat1clj2
+        # password: cmVmdGtuOjAxOjE2ODk3NTMyMjI6RjJQcHdwdXhUZ3EzeGJIRVJ5QUdIdlZsdjlt
         # username: ${{ secrets.DOCKER_HUB_USERNAME }}
         # password: ${{ secrets.DOCKER_HUB_TOKEN }}
     - name: pull-image
