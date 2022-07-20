@@ -1,9 +1,0 @@
-﻿{
-  "agentId": 21,
-  "agentName": "efp-runner",
-  "poolId": 1,
-  "poolName": "Default",
-  "serverUrl": "https://pipelines.actions.githubusercontent.com/Ud0h2eukANoYpBACmG7S0eIyMzCM7AUNCuBVvv777sPAgq4978",
-  "gitHubUrl": "https://github.com/Tamas99/EngineFailurePrediction",
-  "workFolder": "_work"
-}
